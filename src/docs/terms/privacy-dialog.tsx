@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/src/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -10,7 +10,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/src/components/ui/dialog';
 
 interface PrivacyDialogProps {
   open?: boolean;
@@ -135,12 +135,12 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
 
                   {/* 8. Children's Privacy */}
                   <div>
-                    <p><strong>8. Children's Privacy</strong></p>
+                    <p><strong>8. Children&apos;s Privacy</strong></p>
                     <p>
                       Our services are not intended for use by individuals under the age of 18. We do not
                       knowingly collect personal information from children under 18. If you become aware
                       that a child has provided us with personal information, please contact us, and we
-                      will take steps to remove such information and terminate the child's account.
+                      will take steps to remove such information and terminate the child&apos;s account.
                     </p>
                   </div>
 

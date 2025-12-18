@@ -10,7 +10,8 @@ import { usePageTransition } from "../hooks/use-page-transition";
 import Features from "../components/landing/features";
 import Background from "../components/ui/background";
 import { useState, useEffect } from "react";
-
+import FAQsTwo from "../components/landing/faq";
+import { Footer } from "../components/landing/footer";
 
 export default function Home() {
 
@@ -93,6 +94,12 @@ export default function Home() {
           </section>
           <section id="features" className= "relative z-10">
             <Features/>
+          </section>
+          <section id="faq" className= "relative z-10">
+            <FAQsTwo/>
+          </section>
+          <section id="footer" className= "relative z-10">
+            <Footer/>
           </section>
       
         </main>

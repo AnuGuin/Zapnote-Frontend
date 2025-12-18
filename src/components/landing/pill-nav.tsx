@@ -40,8 +40,9 @@ const PillNav: React.FC<PillNavProps> = ({
   onMobileMenuClick,
   initialLoadAnimation = true
 }) => {
+  const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
+  const isDark = mounted && resolvedTheme === 'dark';
 
   const effectiveBaseColor = isDark ? baseColor : '#ffffff';
   const effectivePillColor = isDark ? pillColor : '#000000';
@@ -59,6 +60,10 @@ const PillNav: React.FC<PillNavProps> = ({
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
   const navItemsRef = useRef<HTMLDivElement | null>(null);
   const logoRef = useRef<HTMLAnchorElement | HTMLElement | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const layout = () => {
