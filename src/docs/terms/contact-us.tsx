@@ -46,9 +46,10 @@ export default function ContactSection() {
                                             <SelectValue placeholder="Select Country/Region" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="1">DR Congo</SelectItem>
+                                            <SelectItem value="1">India</SelectItem>
                                             <SelectItem value="2">United States</SelectItem>
-                                            <SelectItem value="3">France</SelectItem>
+                                            <SelectItem value="3">United Kingdom</SelectItem>
+                                            <SelectItem value="4">Japan</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
