@@ -5,9 +5,7 @@ import { Button } from '@/src/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Pacifico } from 'next/font/google';
 import { cn } from '@/src/lib/utils';
-import { usePageTransition } from '@/src/hooks/use-page-transition';
 import ConcentricLoader from '@/src/components/ui/concentric-loader';
-
 
 
 const pacifico = Pacifico({
@@ -19,19 +17,22 @@ const pacifico = Pacifico({
 
 export default function HeroGeometric({
   badge = 'Zapnote',
-  title1 = 'All your links at',
+  title1 = 'All you Read at',
   title2 = 'One Place',
   isNavigating = false,
+  onGetStarted,
 }: {
   badge?: string;
   title1?: string;
   title2?: string;
   isNavigating?: boolean;
+  onGetStarted?: () => void;
 }) {
-  const { navigate } = usePageTransition();
 
   const handleGetStarted = () => {
-    navigate("/auth");
+    if (onGetStarted) {
+      onGetStarted();
+    }
   };
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },

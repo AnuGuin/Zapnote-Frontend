@@ -45,14 +45,14 @@ export default function Home() {
   }, []);
 
     const handleGetStarted = () => {
-    navigate("/auth");
+    navigate("/auth/login");
   };
 
   const navItems = [
     { label: 'Home', href: '#home' },
     { label: 'Features', href: '#features' },
     { label: 'FAQ', href: '#faq' },
-    { label: 'Login', href: '/auth' }
+    { label: 'Login', href: '/auth/login' }
   ];
 
   const ref = React.useRef(null);
@@ -108,12 +108,14 @@ export default function Home() {
           activeHref={activeHref}
           className="custom-nav"
           ease="power2.easeOut"
+          onLoginClick={handleGetStarted}
         />
         <ThemeToggleButton3 className="fixed top-4 right-4 z-50 size-8 p-2" />
+
         <main className="scroll-container" ref={ref}>
           <section id="home" className="w-full overflow-hidden">
             <GeometricShapesLayer/>
-            <HeroGeometric isNavigating={isNavigating} />
+            <HeroGeometric isNavigating={isNavigating} onGetStarted={handleGetStarted} />
           </section>
 
           <section id="features" className= "relative z-10">
@@ -140,7 +142,6 @@ export default function Home() {
           <section id="footer" className= "relative z-10">
             <Footer/>
           </section>
-      
         </main>
       </motion.div>
 

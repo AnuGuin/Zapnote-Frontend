@@ -25,6 +25,7 @@ export interface PillNavProps {
   pillTextColor?: string;
   onMobileMenuClick?: () => void;
   initialLoadAnimation?: boolean;
+  onLoginClick?: () => void;
 }
 
 const PillNav: React.FC<PillNavProps> = ({
@@ -39,7 +40,8 @@ const PillNav: React.FC<PillNavProps> = ({
   hoveredPillTextColor = '#060010',
   pillTextColor,
   onMobileMenuClick,
-  initialLoadAnimation = true
+  initialLoadAnimation = true,
+  onLoginClick
 }) => {
   const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
@@ -428,6 +430,12 @@ const PillNav: React.FC<PillNavProps> = ({
                       aria-label={item.ariaLabel || item.label}
                       onMouseEnter={() => handleEnter(i)}
                       onMouseLeave={() => handleLeave(i)}
+                      onClick={(e) => {
+                        if (item.href === '/auth/login' && onLoginClick) {
+                          e.preventDefault();
+                          onLoginClick();
+                        }
+                      }}
                     >
                       {PillContent}
                     </Link>
@@ -440,6 +448,12 @@ const PillNav: React.FC<PillNavProps> = ({
                       aria-label={item.ariaLabel || item.label}
                       onMouseEnter={() => handleEnter(i)}
                       onMouseLeave={() => handleLeave(i)}
+                      onClick={(e) => {
+                        if (item.href === '/auth/login' && onLoginClick) {
+                          e.preventDefault();
+                          onLoginClick();
+                        }
+                      }}
                     >
                       {PillContent}
                     </a>
@@ -508,7 +522,13 @@ const PillNav: React.FC<PillNavProps> = ({
                     style={defaultStyle}
                     onMouseEnter={hoverIn}
                     onMouseLeave={hoverOut}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={(e) => {
+                      setIsMobileMenuOpen(false);
+                      if (item.href === '/auth/login' && onLoginClick) {
+                        e.preventDefault();
+                        onLoginClick();
+                      }
+                    }}
                   >
                     {item.label}
                   </Link>
@@ -519,7 +539,13 @@ const PillNav: React.FC<PillNavProps> = ({
                     style={defaultStyle}
                     onMouseEnter={hoverIn}
                     onMouseLeave={hoverOut}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={(e) => {
+                      setIsMobileMenuOpen(false);
+                      if (item.href === '/auth/login' && onLoginClick) {
+                        e.preventDefault();
+                        onLoginClick();
+                      }
+                    }}
                   >
                     {item.label}
                   </a>
