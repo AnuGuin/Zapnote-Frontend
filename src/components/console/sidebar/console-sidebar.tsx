@@ -1,8 +1,7 @@
 "use client"
 
-import * as React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
   HomeIcon,
   LibraryIcon,
@@ -16,6 +15,7 @@ import {
   UserIcon,
 } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useSpaces } from "@/src/context/spaces-context"
 
 import {
   DropdownMenu,
@@ -55,7 +55,24 @@ const libraryViews = [
 
 export function ConsoleSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const { setTheme, theme } = useTheme()
+  // We might be outside of SpacesProvider in some edge cases (like login page if it used sidebar, but it doesn't), 
+  // but ConsoleSidebar is used in ConsoleLayout which has the provider.
+  // However, useSpaces throws if not in provider. 
+  // Let's assume it's safe as per layout.tsx change.
+  const { setSelectedTool } = useSpaces()
+
+  const handleLinkClick = (e: React.MouseEvent, url: string, label: string) => {
+    if (pathname === "/spaces") {
+      e.preventDefault()
+      setSelectedTool({ type: 'link', url, label })
+    }
+  }
+
+  const handleDragStart = (e: React.DragEvent, url: string, label: string) => {
+    e.dataTransfer.setData("application/json", JSON.stringify({ type: 'link', url, label }))
+  }
 
   return (
     <Sidebar variant="inset">
@@ -85,7 +102,7 @@ export function ConsoleSidebar() {
                       <ChevronRightIcon className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
-                  <CollapsibleContent>
+                  <CollapsibleContent id="sidebar-library-content">
                     <SidebarMenuSub>
                       {libraryViews.map((view) => (
                         <SidebarMenuSubItem key={view.id}>
@@ -93,7 +110,13 @@ export function ConsoleSidebar() {
                             asChild 
                             isActive={pathname === view.url}
                           >
-                            <Link href={view.url}>
+                            <Link 
+                              href={view.url}
+                              onClick={(e) => handleLinkClick(e, view.url, view.label)}
+                              onDoubleClick={() => pathname === "/spaces" && router.push(view.url)}
+                              draggable
+                              onDragStart={(e) => handleDragStart(e, view.url, view.label)}
+                            >
                               <span>{view.label}</span>
                             </Link>
                           </SidebarMenuSubButton>
@@ -141,6 +164,7 @@ export function ConsoleSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
+                  id="sidebar-user-dropdown-trigger"
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
