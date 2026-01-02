@@ -47,11 +47,10 @@ import {
 } from "@/src/components/ui/sidebar"
 
 const libraryViews = [
-  { id: "category", label: "Category view", url: "/library/category" },
-  { id: "timeline", label: "Timeline view (when saved)", url: "/library/timeline" },
-  { id: "goal", label: "Goal/intent view", url: "/library/goal" },
-  { id: "frequent", label: "Frequently revisited", url: "/library/frequent" },
-  { id: "recent", label: "Recently resurfaced", url: "/library/recent" },
+  { id: "category", label: "Category View", url: "/library/category" },
+  { id: "timeline", label: "Timeline View", url: "/library/timeline" },
+  { id: "goal", label: "Intent View", url: "/library/goal" },
+  { id: "recent", label: "Recently Added", url: "/library/recent" },
 ]
 
 export function ConsoleSidebar() {
