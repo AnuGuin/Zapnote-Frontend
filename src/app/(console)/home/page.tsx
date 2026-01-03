@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Skeleton } from "@/src/components/ui/skeleton"
+import { LoaderThree } from "@/src/components/ui/loader"
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card"
 import { CreateWorkspaceDialog } from "@/src/components/console/home/create-workspace-dialog"
 import { WorkspaceCard } from "@/src/components/console/home/workspace-card"
@@ -75,10 +75,8 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <Skeleton key={i} className="h-32 w-full" />
-                  ))}
+                <div className="flex justify-center py-8">
+                  <LoaderThree />
                 </div>
               ) : workspaces.length === 0 ? (
                 <div className="text-center py-12">
@@ -87,7 +85,7 @@ export default function HomePage() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-3 max-h-150 overflow-y-auto pr-2">
+                <div className="space-y-3 max-h-150 overflow-y-auto p-2">
                   {workspaces.map((workspace) => (
                     <WorkspaceCard
                       key={workspace.id}

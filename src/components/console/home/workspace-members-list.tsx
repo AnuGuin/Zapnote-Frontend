@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Trash2, User } from "lucide-react"
 import { Button } from "@/src/components/ui/button"
 import { Badge } from "@/src/components/ui/badge"
+import { LoaderThree } from "@/src/components/ui/loader"
 import { useWorkspace } from "@/src/context/workspace-context"
 import { useAuth } from "@/src/context/auth-context"
 import type { WorkspaceRole } from "@/src/types/workspace"
@@ -23,9 +24,13 @@ const roleColors = {
 export function WorkspaceMembersList({ workspaceId, userRole }: WorkspaceMembersListProps) {
   const { members, refreshMembers, removeMember } = useWorkspace()
   const { user } = useAuth()
+  const [loading, setLoading] = useState(true)
+
+  const workspaceMembers = members[workspaceId] || []
 
   useEffect(() => {
-    refreshMembers(workspaceId)
+    setLoading(true)
+    refreshMembers(workspaceId).finally(() => setLoading(false))
   }, [workspaceId, refreshMembers])
 
   const canManageMembers = userRole === "OWNER"
@@ -35,19 +40,19 @@ export function WorkspaceMembersList({ workspaceId, userRole }: WorkspaceMembers
     await removeMember(workspaceId, memberId)
   }
 
-  if (members.length === 0) {
+  if (loading) {
     return (
-      <div className="text-sm text-muted-foreground text-center py-4">
-        Loading members...
+      <div className="flex justify-center py-4">
+        <LoaderThree />
       </div>
     )
   }
 
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-medium mb-3">Team Members ({members.length})</h4>
+      <h4 className="text-sm font-medium mb-3">Team Members ({workspaceMembers.length})</h4>
       <div className="space-y-2 max-h-60 overflow-y-auto">
-        {members.map((member) => (
+        {workspaceMembers.map((member) => (
           <div
             key={member.id}
             className="flex items-center justify-between gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"

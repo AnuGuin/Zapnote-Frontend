@@ -19,9 +19,10 @@ import { toast } from 'sonner';
 interface WorkspaceContextType {
   workspaces: WorkspaceWithRole[];
   currentWorkspace: WorkspaceWithRole | null;
-  members: WorkspaceMemberWithUser[];
+  members: Record<string, WorkspaceMemberWithUser[]>;
   recentItems: KnowledgeItem[];
   loading: boolean;
+  itemsLoading: boolean;
   
   setCurrentWorkspace: (workspace: WorkspaceWithRole | null) => void;
   refreshWorkspaces: () => Promise<void>;
@@ -45,9 +46,10 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const [workspaces, setWorkspaces] = useState<WorkspaceWithRole[]>([]);
   const [currentWorkspace, setCurrentWorkspaceState] = useState<WorkspaceWithRole | null>(null);
-  const [members, setMembers] = useState<WorkspaceMemberWithUser[]>([]);
+  const [members, setMembers] = useState<Record<string, WorkspaceMemberWithUser[]>>({});
   const [recentItems, setRecentItems] = useState<KnowledgeItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [itemsLoading, setItemsLoading] = useState(false);
 
   const setCurrentWorkspace = useCallback((workspace: WorkspaceWithRole | null) => {
     setCurrentWorkspaceState(workspace);
@@ -134,7 +136,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const refreshMembers = useCallback(async (workspaceId: string) => {
     try {
       const data = await workspacesApi.getMembers(workspaceId);
-      setMembers(data);
+      setMembers(prev => ({ ...prev, [workspaceId]: data }));
     } catch (error) {
       console.error('Failed to fetch members:', error);
       toast.error('Failed to load members');
@@ -144,7 +146,10 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const addMember = useCallback(async (workspaceId: string, input: AddMemberInput) => {
     try {
       const member = await workspacesApi.addMember(workspaceId, input);
-      setMembers(prev => [...prev, member]);
+      setMembers(prev => ({
+        ...prev,
+        [workspaceId]: [...(prev[workspaceId] || []), member]
+      }));
       toast.success('Member added successfully');
     } catch (error) {
       console.error('Failed to add member:', error);
@@ -156,7 +161,10 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const updateMemberRole = useCallback(async (workspaceId: string, memberId: string, input: UpdateMemberRoleInput) => {
     try {
       const updated = await workspacesApi.updateMemberRole(workspaceId, memberId, input);
-      setMembers(prev => prev.map(m => m.id === memberId ? updated : m));
+      setMembers(prev => ({
+        ...prev,
+        [workspaceId]: (prev[workspaceId] || []).map(m => m.id === memberId ? updated : m)
+      }));
       toast.success('Member role updated');
     } catch (error) {
       console.error('Failed to update member role:', error);
@@ -168,7 +176,10 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const removeMember = useCallback(async (workspaceId: string, memberId: string) => {
     try {
       await workspacesApi.removeMember(workspaceId, memberId);
-      setMembers(prev => prev.filter(m => m.id !== memberId));
+      setMembers(prev => ({
+        ...prev,
+        [workspaceId]: (prev[workspaceId] || []).filter(m => m.id !== memberId)
+      }));
       toast.success('Member removed');
     } catch (error) {
       console.error('Failed to remove member:', error);
@@ -178,11 +189,14 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const refreshRecentItems = useCallback(async (workspaceId: string) => {
+    setItemsLoading(true);
     try {
       const items = await knowledgeApi.getRecentItems(workspaceId, 10);
       setRecentItems(items);
     } catch (error) {
       console.error('Failed to fetch recent items:', error);
+    } finally {
+      setItemsLoading(false);
     }
   }, []);
 
@@ -223,6 +237,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     members,
     recentItems,
     loading,
+    itemsLoading,
     setCurrentWorkspace,
     refreshWorkspaces,
     createWorkspace,

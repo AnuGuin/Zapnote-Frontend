@@ -4,7 +4,7 @@ import { useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/src/components/ui/button"
-import { Skeleton } from "@/src/components/ui/skeleton"
+import { LoaderThree } from "@/src/components/ui/loader"
 import { KnowledgeItemCard } from "@/src/components/console/workspace/knowledge-item-card"
 import { AddLinkDialog } from "@/src/components/console/home/add-link-dialog"
 import { useWorkspace } from "@/src/context/workspace-context"
@@ -18,7 +18,8 @@ export default function WorkspacePage({ params }: { params: Promise<{ workspaceI
     setCurrentWorkspace, 
     recentItems, 
     refreshRecentItems,
-    loading 
+    loading,
+    itemsLoading
   } = useWorkspace()
 
   useEffect(() => {
@@ -33,10 +34,8 @@ export default function WorkspacePage({ params }: { params: Promise<{ workspaceI
 
   if (loading && !currentWorkspace) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <Skeleton key={i} className="h-48 w-full" />
-        ))}
+      <div className="flex items-center justify-center h-full">
+        <LoaderThree />
       </div>
     )
   }
@@ -54,10 +53,8 @@ export default function WorkspacePage({ params }: { params: Promise<{ workspaceI
 
   if (!currentWorkspace) {
      return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-48 w-full" />
-        ))}
+      <div className="flex items-center justify-center h-full">
+        <LoaderThree />
       </div>
     )
   }
@@ -85,7 +82,11 @@ export default function WorkspacePage({ params }: { params: Promise<{ workspaceI
       </div>
 
       <div className="flex-1 overflow-y-auto min-h-0">
-        {recentItems.length === 0 ? (
+        {itemsLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <LoaderThree />
+          </div>
+        ) : recentItems.length === 0 ? (
           <div className="text-center py-12 border rounded-lg bg-muted/10 h-full flex flex-col items-center justify-center">
             <p className="text-muted-foreground mb-4">No items in this workspace yet</p>
             <AddLinkDialog workspaceId={workspaceId} />
