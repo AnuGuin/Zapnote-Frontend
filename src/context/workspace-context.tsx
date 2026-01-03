@@ -44,10 +44,19 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefin
 export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const [workspaces, setWorkspaces] = useState<WorkspaceWithRole[]>([]);
-  const [currentWorkspace, setCurrentWorkspace] = useState<WorkspaceWithRole | null>(null);
+  const [currentWorkspace, setCurrentWorkspaceState] = useState<WorkspaceWithRole | null>(null);
   const [members, setMembers] = useState<WorkspaceMemberWithUser[]>([]);
   const [recentItems, setRecentItems] = useState<KnowledgeItem[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const setCurrentWorkspace = useCallback((workspace: WorkspaceWithRole | null) => {
+    setCurrentWorkspaceState(workspace);
+    if (workspace) {
+      localStorage.setItem('currentWorkspaceId', workspace.id);
+    } else {
+      localStorage.removeItem('currentWorkspaceId');
+    }
+  }, []);
 
   const refreshWorkspaces = useCallback(async () => {
     if (!user) return;
@@ -63,6 +72,21 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     }
   }, [user]);
+
+  // Auto-select workspace
+  useEffect(() => {
+    if (workspaces.length > 0 && !currentWorkspace) {
+      const savedId = localStorage.getItem('currentWorkspaceId');
+      const savedWorkspace = workspaces.find(w => w.id === savedId);
+      
+      if (savedWorkspace) {
+        setCurrentWorkspaceState(savedWorkspace);
+      } else {
+        setCurrentWorkspaceState(workspaces[0]);
+        localStorage.setItem('currentWorkspaceId', workspaces[0].id);
+      }
+    }
+  }, [workspaces, currentWorkspace]);
 
   const createWorkspace = useCallback(async (input: CreateWorkspaceInput) => {
     try {
