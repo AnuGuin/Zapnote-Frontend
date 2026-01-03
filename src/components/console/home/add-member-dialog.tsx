@@ -66,7 +66,7 @@ export function AddMemberDialog({ workspaceId }: AddMemberDialogProps) {
           Add Member
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Add Team Member</DialogTitle>
@@ -100,19 +100,16 @@ export function AddMemberDialog({ workspaceId }: AddMemberDialogProps) {
                   <SelectItem value="VIEWER">
                     <div className="flex flex-col items-start">
                       <span className="font-medium">Viewer</span>
-                      <span className="text-xs text-muted-foreground">Can view workspace content</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="EDITOR">
                     <div className="flex flex-col items-start">
                       <span className="font-medium">Editor</span>
-                      <span className="text-xs text-muted-foreground">Can add and edit content</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="OWNER">
                     <div className="flex flex-col items-start">
                       <span className="font-medium">Owner</span>
-                      <span className="text-xs text-muted-foreground">Full access including member management</span>
                     </div>
                   </SelectItem>
                 </SelectContent>

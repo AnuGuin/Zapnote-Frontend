@@ -96,7 +96,7 @@ export function AddLinkDialog({ workspaceId }: AddLinkDialogProps) {
               )}
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="intent">Purpose / Intent (Optional)</Label>
+              <Label htmlFor="intent">Intent</Label>
               <Textarea
                 id="intent"
                 placeholder="Why are you saving this? What do you want to learn from it?"

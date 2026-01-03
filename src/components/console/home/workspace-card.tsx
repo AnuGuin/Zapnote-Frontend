@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Users, Link as LinkIcon, ChevronDown, ChevronUp } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Users, Link as LinkIcon, ChevronDown, ChevronUp, MessageSquare } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card"
 import { Badge } from "../../ui/badge"
 import { Button } from "@/src/components/ui/button"
@@ -27,6 +28,7 @@ const roleColors = {
 
 export function WorkspaceCard({ workspace, isActive, onSelect }: WorkspaceCardProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const router = useRouter()
 
   const canEdit = workspace.role === "OWNER" || workspace.role === "EDITOR"
 
@@ -56,6 +58,17 @@ export function WorkspaceCard({ workspace, isActive, onSelect }: WorkspaceCardPr
                 )}
               </div>
               <div className="flex items-center gap-1 shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    router.push(`/chat?workspaceId=${workspace.id}`)
+                  }}
+                  title="Chat"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                </Button>
                 {workspace.role === "OWNER" && (
                   <DeleteWorkspaceDialog 
                     workspaceId={workspace.id} 

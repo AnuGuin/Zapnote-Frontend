@@ -47,15 +47,22 @@ export function RecentItemsList({ items }: RecentItemsListProps) {
             <div className="flex items-start justify-between gap-3 mb-2">
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 <StatusIcon className={cn("h-4 w-4 shrink-0", statusConfig[item.status].color)} />
-                <a
-                  href={item.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium hover:underline truncate flex items-center gap-1"
-                >
-                  {item.summary || item.sourceUrl}
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </a>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <a
+                    href={item.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium hover:underline truncate flex items-center gap-1"
+                  >
+                    {item.summary || item.sourceUrl}
+                    <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                  {item.summary && (
+                    <p className="text-xs text-muted-foreground truncate">
+                      {item.sourceUrl}
+                    </p>
+                  )}
+                </div>
               </div>
               <Badge variant="outline" className={cn("text-xs shrink-0", contentTypeColors[item.contentType])}>
                 {item.contentType}

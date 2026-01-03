@@ -68,8 +68,8 @@ export default function Calendar31({ calendarData }: Calendar31Props) {
                       rel="noopener noreferrer"
                       className="font-medium hover:underline line-clamp-1 flex items-center gap-1"
                     >
-                      {item.summary || item.sourceUrl}
-                      <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                      {item.sourceUrl}
+                      <ExternalLink className="h-3 w-3 shrink-0" />
                     </a>
                     <div className="text-muted-foreground text-xs mt-1">
                       {item.workspaceName}

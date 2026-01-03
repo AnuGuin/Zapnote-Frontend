@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Skeleton } from "@/src/components/ui/skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card"
 import { CreateWorkspaceDialog } from "@/src/components/console/home/create-workspace-dialog"
@@ -20,6 +21,7 @@ export default function HomePage() {
     setCurrentWorkspace,
     refreshRecentItems,
   } = useWorkspace()
+  const router = useRouter()
 
   useEffect(() => {
     if (currentWorkspace) {
@@ -91,7 +93,10 @@ export default function HomePage() {
                       key={workspace.id}
                       workspace={workspace}
                       isActive={currentWorkspace?.id === workspace.id}
-                      onSelect={() => setCurrentWorkspace(workspace)}
+                      onSelect={() => {
+                        setCurrentWorkspace(workspace)
+                        router.push(`/home/${workspace.id}`)
+                      }}
                     />
                   ))}
                 </div>
