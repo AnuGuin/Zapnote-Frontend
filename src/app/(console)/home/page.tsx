@@ -95,7 +95,6 @@ export default function HomePage() {
                       isActive={currentWorkspace?.id === workspace.id}
                       onSelect={() => {
                         setCurrentWorkspace(workspace)
-                        router.push(`/home/${workspace.id}`)
                       }}
                     />
                   ))}

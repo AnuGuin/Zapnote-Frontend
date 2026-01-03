@@ -36,8 +36,10 @@ export function WorkspaceCard({ workspace, isActive, onSelect }: WorkspaceCardPr
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <Card 
         className={cn(
-          "transition-all hover:shadow-md cursor-pointer",
-          isActive && "ring-2 ring-primary"
+          "transition-all hover:shadow-md cursor-pointer border-transparent",
+          isActive 
+            ? "shadow-[0_0_20px_rgba(var(--primary),0.15)] border-primary/50 dark:shadow-[0_0_20px_rgba(var(--primary),0.3)]" 
+            : "border-border"
         )}
         onClick={onSelect}
       >
@@ -46,7 +48,15 @@ export function WorkspaceCard({ workspace, isActive, onSelect }: WorkspaceCardPr
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <CardTitle className="text-lg flex items-center gap-2 mb-2">
-                  {workspace.name}
+                  <span 
+                    className="hover:underline cursor-pointer hover:text-primary transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      router.push(`/home/${workspace.id}`)
+                    }}
+                  >
+                    {workspace.name}
+                  </span>
                   <Badge variant="outline" className={cn("text-xs", roleColors[workspace.role])}>
                     {workspace.role}
                   </Badge>
