@@ -2,7 +2,7 @@
 
 import { ExternalLink, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react"
 import { Badge } from "@/src/components/ui/badge"
-import type { KnowledgeItem } from "@/src/types/workspace"
+import type { KnowledgeItem, ContentType } from "@/src/types/workspace"
 import { cn } from "@/src/lib/utils"
 
 interface RecentItemsListProps {
@@ -16,10 +16,13 @@ const statusConfig = {
   FAILED: { icon: XCircle, color: "text-red-600 dark:text-red-400", label: "Failed" },
 }
 
-const contentTypeColors = {
+const contentTypeColors: Record<ContentType, string> = {
   ARTICLE: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20",
   VIDEO: "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20",
   DOCUMENT: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
+  AUDIO: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20",
+  "SOCIAL POST": "bg-pink-500/10 text-pink-700 dark:text-pink-400 border-pink-500/20",
+  CODE: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-500/20",
   IMAGE: "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20",
   OTHER: "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20",
 }

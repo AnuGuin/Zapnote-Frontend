@@ -2,7 +2,15 @@ export type WorkspaceRole = 'OWNER' | 'EDITOR' | 'VIEWER';
 
 export type ProcessingStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
 
-export type ContentType = 'ARTICLE' | 'VIDEO' | 'DOCUMENT' | 'IMAGE' | 'OTHER';
+export type ContentType =
+  | 'ARTICLE'
+  | 'VIDEO'
+  | 'AUDIO'
+  | 'SOCIAL POST'
+  | 'DOCUMENT'
+  | 'CODE'
+  | 'IMAGE'
+  | 'OTHER';
 
 export interface UserProfile {
   id: string;
