@@ -1,6 +1,7 @@
 "use client"
 
-import { ExternalLink, MoreVertical, Calendar, Tag as TagIcon } from "lucide-react"
+import { ExternalLink, MoreVertical, Calendar, Tag as TagIcon, MessageSquare } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader } from "@/src/components/ui/card"
 import { Badge } from "@/src/components/ui/badge"
 import { Button } from "@/src/components/ui/button"
@@ -26,6 +27,8 @@ const contentTypeColors = {
 }
 
 export function KnowledgeItemCard({ item }: KnowledgeItemCardProps) {
+  const router = useRouter()
+
   return (
     <Card className="group hover:shadow-md transition-all">
       <CardHeader className="p-4 pb-2 space-y-2">
@@ -44,22 +47,33 @@ export function KnowledgeItemCard({ item }: KnowledgeItemCardProps) {
               href={item.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="block font-semibold hover:underline truncate"
+              className="block font-semibold hover:underline line-clamp-2 wrap-break-word"
             >
               {item.summary || item.sourceUrl}
             </a>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-1">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 text-muted-foreground hover:text-primary"
+              onClick={() => router.push(`/chat?context=${item.id}`)}
+              title="Chat with this item"
+            >
+              <MessageSquare className="h-4 w-4" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>Edit</DropdownMenuItem>
+                <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="p-4 pt-0 space-y-3">
@@ -67,7 +81,7 @@ export function KnowledgeItemCard({ item }: KnowledgeItemCardProps) {
           href={item.sourceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-muted-foreground hover:underline truncate block flex items-center gap-1"
+          className="text-xs text-muted-foreground hover:underline truncate flex items-center gap-1"
         >
           {item.sourceUrl}
           <ExternalLink className="h-3 w-3" />
