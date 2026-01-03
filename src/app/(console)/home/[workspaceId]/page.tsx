@@ -36,7 +36,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ workspaceI
 
   if (loading && !currentWorkspace) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="fixed top-[calc(50vh-2.5rem)] left-[calc(50vw-2.5rem)]">
         <LoaderThree />
       </div>
     )
@@ -55,7 +55,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ workspaceI
 
   if (!currentWorkspace) {
      return (
-      <div className="flex items-center justify-center h-full">
+      <div className="fixed top-[calc(50vh-2.5rem)] left-[calc(50vw-2.5rem)]">
         <LoaderThree />
       </div>
     )
@@ -79,7 +79,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ workspaceI
           <Button variant="outline" onClick={() => router.push(`/chat?workspaceId=${workspaceId}`)}>
             Chat
           </Button>
-          <AddLinkDialog workspaceId={workspaceId} />
+          {currentWorkspace.role !== 'VIEWER' && <AddLinkDialog workspaceId={workspaceId} />}
         </div>
       </div>
 
@@ -91,7 +91,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ workspaceI
         ) : recentItems.length === 0 ? (
           <div className="text-center py-12 border rounded-lg bg-muted/10 h-full flex flex-col items-center justify-center">
             <p className="text-muted-foreground mb-4">No items in this workspace yet</p>
-            <AddLinkDialog workspaceId={workspaceId} />
+            {currentWorkspace.role !== 'VIEWER' && <AddLinkDialog workspaceId={workspaceId} />}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-6">

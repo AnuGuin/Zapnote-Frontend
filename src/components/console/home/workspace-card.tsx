@@ -9,7 +9,6 @@ import { Button } from "@/src/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/src/components/ui/collapsible"
 import type { WorkspaceWithRole } from "@/src/types/workspace"
 import { AddMemberDialog } from "./add-member-dialog"
-import { AddLinkDialog } from "./add-link-dialog"
 import { DeleteWorkspaceDialog } from "./delete-workspace-dialog"
 import { WorkspaceMembersList } from "./workspace-members-list"
 import { cn } from "@/src/lib/utils"
@@ -114,7 +113,6 @@ export function WorkspaceCard({ workspace, isActive, onSelect }: WorkspaceCardPr
         <CollapsibleContent>
           <CardContent className="pt-0 space-y-4">
             <div className="flex gap-2 flex-wrap">
-              {canEdit && <AddLinkDialog workspaceId={workspace.id} />}
               {canEdit && <AddMemberDialog workspaceId={workspace.id} />}
             </div>
 

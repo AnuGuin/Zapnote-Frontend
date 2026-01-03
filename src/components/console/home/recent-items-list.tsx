@@ -11,7 +11,7 @@ interface RecentItemsListProps {
 
 const statusConfig = {
   PENDING: { icon: Clock, color: "text-yellow-600 dark:text-yellow-400", label: "Pending" },
-  PROCESSING: { icon: Loader2, color: "text-blue-600 dark:text-blue-400 animate-spin", label: "Processing" },
+  PROCESSING: { icon: Loader2, color: "text-blue-600 dark:text-blue-400", label: "Processing" },
   COMPLETED: { icon: CheckCircle2, color: "text-green-600 dark:text-green-400", label: "Completed" },
   FAILED: { icon: XCircle, color: "text-red-600 dark:text-red-400", label: "Failed" },
 }
@@ -39,7 +39,7 @@ export function RecentItemsList({ items }: RecentItemsListProps) {
 
   return (
     <div className="space-y-3">
-      {items.map((item) => {
+      {items.slice(0, 3).map((item) => {
         const StatusIcon = statusConfig[item.status].icon
         
         return (

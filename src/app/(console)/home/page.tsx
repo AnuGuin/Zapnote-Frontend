@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect } from "react"
-import { useRouter } from "next/navigation"
 import { LoaderThree } from "@/src/components/ui/loader"
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card"
 import { CreateWorkspaceDialog } from "@/src/components/console/home/create-workspace-dialog"
@@ -21,7 +20,6 @@ export default function HomePage() {
     setCurrentWorkspace,
     refreshRecentItems,
   } = useWorkspace()
-  const router = useRouter()
 
   useEffect(() => {
     if (currentWorkspace) {
@@ -55,7 +53,7 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="fixed top-[calc(50vh-2.5rem)] left-[calc(50vw-2.5rem)]">
         <LoaderThree />
       </div>
     )

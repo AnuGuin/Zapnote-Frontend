@@ -22,6 +22,7 @@
     "@aceternity": "https://ui.aceternity.com/registry/{name}.json",
     "@react-bits": "https://reactbits.dev/r/{name}.json",
     "@skiper-ui": "https://skiper-ui.com/registry/{name}.json",
-    "@kokonutui": "https://kokonutui.com/r/{name}.json"
+    "@kokonutui": "https://kokonutui.com/r/{name}.json",
+    "@ai-elements": "https://registry.ai-sdk.dev/{name}.json"
   }
 }
