@@ -1,0 +1,32 @@
+﻿
+> zapnote-fe@0.1.0 lint
+> eslint
+
+
+C:\Users\PRATIK\Documents\Projects\Zapnote\Zapnote-Frontend\src\app\page.tsx
+  61:11  warning  'scrollYProgress' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\PRATIK\Documents\Projects\Zapnote\Zapnote-Frontend\src\components\auth\auth-wrapper.tsx
+  20:32  warning  'userData' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\PRATIK\Documents\Projects\Zapnote\Zapnote-Frontend\src\components\auth\login.tsx
+  26:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\PRATIK\Documents\Projects\Zapnote\Zapnote-Frontend\src\components\auth\signup.tsx
+  26:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\PRATIK\Documents\Projects\Zapnote\Zapnote-Frontend\src\components\console\spaces\whiteboard.tsx
+  17:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\PRATIK\Documents\Projects\Zapnote\Zapnote-Frontend\src\components\landing\hero.tsx
+  60:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\PRATIK\Documents\Projects\Zapnote\Zapnote-Frontend\src\components\landing\pill-nav.tsx
+  339:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  356:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\PRATIK\Documents\Projects\Zapnote\Zapnote-Frontend\src\context\workspace-context.tsx
+  3:54  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+Γ£û 9 problems (1 error, 8 warnings)
+
