@@ -23,11 +23,13 @@ export default function HomePage() {
     refreshRecentItems,
   } = useWorkspace()
 
+  const workspaceId = currentWorkspace?.id
+
   useEffect(() => {
-    if (currentWorkspace) {
-      refreshRecentItems(currentWorkspace.id)
+    if (workspaceId) {
+      refreshRecentItems(workspaceId)
     }
-  }, [currentWorkspace, refreshRecentItems])
+  }, [workspaceId, refreshRecentItems])
 
   const calendarData = recentItems.reduce((acc, item) => {
     const dateKey = new Date(item.createdAt).toISOString().split('T')[0]

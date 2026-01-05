@@ -210,15 +210,23 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       setRecentItems(items);
       // update item count on workspace if the workspace is present
       setWorkspaces(prev => prev.map(w => w.id === workspaceId ? { ...w, itemCount: Math.max(items.length, w.itemCount || 0) } : w));
-      if (currentWorkspace?.id === workspaceId) {
-        setCurrentWorkspaceState(prev => prev ? { ...prev, itemCount: Math.max(items.length, prev.itemCount || 0) } : prev as any);
-      }
+      
+      setCurrentWorkspaceState(prev => {
+        if (prev && prev.id === workspaceId) {
+          const newItemCount = Math.max(items.length, prev.itemCount || 0);
+          if (prev.itemCount === newItemCount) {
+            return prev;
+          }
+          return { ...prev, itemCount: newItemCount };
+        }
+        return prev;
+      });
     } catch (error) {
       console.error('Failed to fetch recent items:', error);
     } finally {
       if (!silent) setItemsLoading(false);
     }
-  }, [currentWorkspace]);
+  }, []);
 
   const createKnowledgeItem = useCallback(async (workspaceId: string, input: CreateKnowledgeItemInput) => {
     try {
