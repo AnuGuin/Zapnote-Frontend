@@ -153,18 +153,11 @@ export function ChatInterface({
         convId,
         { message: content, sourceItemIds: effectiveSourceItemIds },
         (chunk) => {
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === tempAssistantId ? { ...msg, content: chunk } : msg
-            )
-          )
           setStreamingContent(chunk)
           setIsThinking(false)
         }
       )
-      setStreamingMessageId(null)
-      setStreamingContent("")
-      
+
       setMessages((prev) => 
         prev.map((msg) => 
           msg.id === tempAssistantId ? responseMessage : msg
@@ -184,10 +177,10 @@ export function ChatInterface({
 
       // Remove temp messages on error
       setMessages((prev) => prev.filter((m) => m.id !== tempUserMessage.id && m.id !== tempAssistantId))
-      setStreamingMessageId(null)
-      setStreamingContent("")
     } finally {
       setIsLoading(false)
+      setStreamingMessageId(null)
+      setStreamingContent("")
       setIsThinking(false)
     }
   }
@@ -329,18 +322,26 @@ export function ChatInterface({
             className="flex-1 overflow-y-auto px-4 py-6"
           >
             <div className="max-w-4xl mx-auto space-y-6 pb-4">
-              {messages.map((msg) => (
-                <ChatMessage
-                  key={msg.id}
-                  message={msg}
-                  isStreaming={streamingMessageId === msg.id}
-                  streamingContent={streamingContent}
-                />
-              ))}
+              {messages.map((msg) => {
+                // Skip rendering streaming message if there's no content yet (thinking indicator handles this)
+                const isCurrentlyStreaming = streamingMessageId === msg.id
+                const hasContent = isCurrentlyStreaming ? streamingContent : msg.content
+                if (isCurrentlyStreaming && !hasContent) {
+                  return null
+                }
+                return (
+                  <ChatMessage
+                    key={msg.id}
+                    message={msg}
+                    isStreaming={isCurrentlyStreaming}
+                    streamingContent={streamingContent}
+                  />
+                )
+              })}
 
               {isThinking && (
                 <div className="flex justify-start">
-                  <div className="p-4">
+                  <div className="bg-muted/30 rounded-2xl p-4">
                     <Reasoning isStreaming={isThinking}>
                       <ReasoningTrigger />
                       <ReasoningContent>

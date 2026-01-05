@@ -1,3 +1,4 @@
+// src/components/console/chat/chat-message.tsx
 "use client"
 
 import { useState } from "react"
@@ -17,7 +18,9 @@ interface ChatMessageProps {
 export function ChatMessage({ message, isStreaming, streamingContent }: ChatMessageProps) {
   const [copied, setCopied] = useState(false)
   const isUser = message.role === "user"
-  const displayContent = message.content || (isStreaming ? streamingContent : "") || ""
+  
+  // Use streaming content only if it has actual content, otherwise fall back to message content
+  const displayContent = isStreaming && streamingContent ? streamingContent : message.content
 
   const handleCopy = async () => {
     try {
