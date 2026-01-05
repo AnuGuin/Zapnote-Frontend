@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/src/components/ui/dropdown-menu"
+import { Textarea } from "@/src/components/ui/textarea"
 import type { KnowledgeItem, ContentType } from "@/src/types/workspace"
 import { cn } from "@/src/lib/utils"
 import { useWorkspace } from "@/src/context/workspace-context"
@@ -50,9 +51,12 @@ const contentTypeColors: Record<ContentType, string> = {
 
 export function KnowledgeItemCard({ item }: KnowledgeItemCardProps) {
   const router = useRouter()
-  const { deleteKnowledgeItem } = useWorkspace()
+  const { deleteKnowledgeItem, updateKnowledgeItem } = useWorkspace()
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [editIntent, setEditIntent] = useState(item.userIntent || "")
+  const [isUpdating, setIsUpdating] = useState(false)
 
   const handleDelete = async () => {
     try {
@@ -70,6 +74,18 @@ export function KnowledgeItemCard({ item }: KnowledgeItemCardProps) {
 
   const handleChatClick = () => {
     router.push(`/chat?workspaceId=${item.workspaceId}&sourceItemId=${item.id}&type=link`)
+  }
+
+  const handleEdit = async () => {
+    try {
+      setIsUpdating(true)
+      await updateKnowledgeItem(item.workspaceId, item.id, { userIntent: editIntent })
+      setIsEditOpen(false)
+    } catch (error) {
+      // Error is handled in the context
+    } finally {
+      setIsUpdating(false)
+    }
   }
 
   const StatusIcon = statusConfig[item.status].icon
@@ -115,7 +131,10 @@ export function KnowledgeItemCard({ item }: KnowledgeItemCardProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuItem className="cursor-pointer" onClick={() => {
+                  setEditIntent(item.userIntent || "")
+                  setIsEditOpen(true)
+                }}>
                   <Edit className="h-4 w-4 mr-2" />
                   Edit
                 </DropdownMenuItem>
@@ -178,6 +197,31 @@ export function KnowledgeItemCard({ item }: KnowledgeItemCardProps) {
         </div>
       </CardContent>
     
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Item Intent</DialogTitle>
+            <DialogDescription>
+              Update the intent or purpose for this knowledge item.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Textarea
+              placeholder="Enter the intent or purpose for this item..."
+              value={editIntent}
+              onChange={(e) => setEditIntent(e.target.value)}
+              rows={4}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditOpen(false)}>Cancel</Button>
+            <Button onClick={handleEdit} disabled={isUpdating}>
+              {isUpdating ? 'Updating...' : 'Update'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
         <DialogContent>
           <DialogHeader>

@@ -136,30 +136,23 @@ export function ChatInterface({
     setIsThinking(true)
 
     try {
-      // Send message and get response
       const responseMessage = await chatApi.sendMessage(
         effectiveWorkspaceId,
         convId,
         { message: content, sourceItemIds: effectiveSourceItemIds }
       )
 
-      // Stop thinking indicator
       setIsThinking(false)
 
-      // Replace temp user message and add assistant response
       setMessages((prev) => {
-        // Remove temp message
+
         const withoutTemp = prev.filter((m) => m.id !== tempUserMessage.id)
-        // Add both real user message and assistant response
-        // The API should return the assistant message, but if it includes user message, handle both
         return [...withoutTemp, responseMessage]
       })
 
-      // Reload conversation to get the complete state with both messages
       const updatedConv = await chatApi.getConversation(effectiveWorkspaceId, convId)
       setMessages(updatedConv.messages || [])
 
-      // Update conversation list
       setConversations((prev) =>
         prev.map((c) =>
           c.id === convId
@@ -171,7 +164,6 @@ export function ChatInterface({
       console.error("Failed to send message:", error)
       toast.error("Failed to send message")
 
-      // Remove temp user message on error
       setMessages((prev) => prev.filter((m) => m.id !== tempUserMessage.id))
     } finally {
       setIsLoading(false)

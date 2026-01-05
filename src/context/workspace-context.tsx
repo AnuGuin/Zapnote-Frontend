@@ -37,6 +37,7 @@ interface WorkspaceContextType {
   
   refreshRecentItems: (workspaceId: string, silent?: boolean) => Promise<void>;
   createKnowledgeItem: (workspaceId: string, input: CreateKnowledgeItemInput) => Promise<KnowledgeItem>;
+  updateKnowledgeItem: (workspaceId: string, itemId: string, input: { userIntent?: string }) => Promise<void>;
   deleteKnowledgeItem: (workspaceId: string, itemId: string) => Promise<void>;
 }
 
@@ -246,6 +247,18 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const updateKnowledgeItem = useCallback(async (workspaceId: string, itemId: string, input: { userIntent?: string }) => {
+    try {
+      const updatedItem = await knowledgeApi.updateItem(workspaceId, itemId, input);
+      setRecentItems(prev => prev.map(i => i.id === itemId ? updatedItem : i));
+      toast.success('Item updated successfully');
+    } catch (error) {
+      console.error('Failed to update knowledge item:', error);
+      toast.error('Failed to update item');
+      throw error;
+    }
+  }, []);
+
   const deleteKnowledgeItem = useCallback(async (workspaceId: string, itemId: string) => {
     try {
       await knowledgeApi.deleteItem(workspaceId, itemId);
@@ -304,6 +317,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     removeMember,
     refreshRecentItems,
     createKnowledgeItem,
+    updateKnowledgeItem,
     deleteKnowledgeItem,
   };
 
