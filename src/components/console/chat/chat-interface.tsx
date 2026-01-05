@@ -62,7 +62,6 @@ export function ChatInterface({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [])
 
-  // Load conversations
   useEffect(() => {
     if (!effectiveWorkspaceId) return
 
@@ -72,7 +71,6 @@ export function ChatInterface({
         const convs = await chatApi.getConversations(effectiveWorkspaceId)
         setConversations(convs)
 
-        // Load initial conversation if specified
         if (initialConversationId) {
           const conv = await chatApi.getConversation(
             effectiveWorkspaceId,
@@ -91,7 +89,6 @@ export function ChatInterface({
     loadConversations()
   }, [effectiveWorkspaceId, initialConversationId])
 
-  // Auto-scroll when new messages arrive
   useEffect(() => {
     scrollToBottom()
   }, [messages, scrollToBottom])
@@ -101,6 +98,8 @@ export function ChatInterface({
       toast.error("No workspace selected")
       return
     }
+
+    const effectiveSourceItemIds = sourceItemIds || (sourceItemId ? [sourceItemId] : undefined)
 
     let convId: string = activeConversationId || ""
 
@@ -124,41 +123,45 @@ export function ChatInterface({
       }
     }
 
-    // Add user message immediately
     const tempUserMessage: Message = {
       id: `temp-${Date.now()}`,
       conversationId: convId,
       role: "user",
       content,
-      sourceItemIds,
+      sourceItemIds: effectiveSourceItemIds,
       createdAt: new Date().toISOString(),
     }
 
-    setMessages((prev) => [...prev, tempUserMessage])
+    const tempAssistantId = `temp-assistant-${Date.now()}`
+    const tempAssistantMessage: Message = {
+      id: tempAssistantId,
+      conversationId: convId,
+      role: "assistant",
+      content: "",
+      createdAt: new Date().toISOString(),
+    }
+
+    setMessages((prev) => [...prev, tempUserMessage, tempAssistantMessage])
     setIsLoading(true)
     setIsThinking(true)
 
     try {
-      // Send message with streaming
-      const tempAssistantId = `temp-assistant-${Date.now()}`
       setStreamingMessageId(tempAssistantId)
       setStreamingContent("")
 
       await chatApi.streamMessage(
         effectiveWorkspaceId,
         convId,
-        { message: content, sourceItemIds },
+        { message: content, sourceItemIds: effectiveSourceItemIds },
         (chunk) => {
           setStreamingContent(chunk)
           setIsThinking(false)
         }
       )
 
-      // Load the complete conversation to get the real message
       const updatedConv = await chatApi.getConversation(effectiveWorkspaceId, convId)
       setMessages(updatedConv.messages || [])
 
-      // Update conversation in list
       setConversations((prev) =>
         prev.map((c) =>
           c.id === convId
@@ -170,8 +173,8 @@ export function ChatInterface({
       console.error("Failed to send message:", error)
       toast.error("Failed to send message")
 
-      // Remove temp user message on error
-      setMessages((prev) => prev.filter((m) => m.id !== tempUserMessage.id))
+      // Remove temp messages on error
+      setMessages((prev) => prev.filter((m) => m.id !== tempUserMessage.id && m.id !== tempAssistantId))
     } finally {
       setIsLoading(false)
       setStreamingMessageId(null)
@@ -190,7 +193,6 @@ export function ChatInterface({
       const conv = await chatApi.getConversation(effectiveWorkspaceId, id)
       setMessages(conv.messages || [])
 
-      // Update URL
       const params = new URLSearchParams()
       if (conv.workspaceId) params.set("workspaceId", conv.workspaceId)
       if (conv.sourceItemId) {
@@ -237,7 +239,7 @@ export function ChatInterface({
 
   return (
     <div className="flex flex-col h-full relative bg-background">
-      {/* Header */}
+
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-3 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => router.push(effectiveWorkspaceId ? `/home/${effectiveWorkspaceId}` : '/home')}>
@@ -262,7 +264,7 @@ export function ChatInterface({
       </div>
 
       {messages.length === 0 && !isLoading ? (
-        // Greeting View
+
         <div className="h-full relative w-full overflow-hidden">
           <div 
             className="absolute flex flex-col items-center justify-center transition-all duration-250 ease-linear" 
@@ -311,7 +313,7 @@ export function ChatInterface({
           </div>
         </div>
       ) : (
-        // Chat View
+
         <>
           <div
             ref={messagesContainerRef}
