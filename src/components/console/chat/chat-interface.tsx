@@ -100,6 +100,7 @@ export function ChatInterface({
 
     let convId: string = activeConversationId || ""
 
+    // Create conversation if doesn't exist
     if (!convId) {
       try {
         const title = content.length > 50 ? `${content.slice(0, 50)}...` : content
@@ -119,6 +120,7 @@ export function ChatInterface({
       }
     }
 
+    // Create temporary user message
     const tempUserMessage: Message = {
       id: `temp-user-${Date.now()}`,
       conversationId: convId,
@@ -128,50 +130,40 @@ export function ChatInterface({
       createdAt: new Date().toISOString(),
     }
 
+    // Add user message to UI immediately
     setMessages((prev) => [...prev, tempUserMessage])
     setIsLoading(true)
     setIsThinking(true)
 
     try {
+      // Send message and get response
       const responseMessage = await chatApi.sendMessage(
         effectiveWorkspaceId,
         convId,
         { message: content, sourceItemIds: effectiveSourceItemIds }
       )
 
+      // Stop thinking indicator
       setIsThinking(false)
 
+      // Replace temp user message and add assistant response
       setMessages((prev) => {
+        // Remove temp message
         const withoutTemp = prev.filter((m) => m.id !== tempUserMessage.id)
-        
-        const hasRealUserMessage = withoutTemp.some(
-          (m) => m.role === "user" && m.content === content && 
-          Math.abs(new Date(m.createdAt).getTime() - new Date(tempUserMessage.createdAt).getTime()) < 5000
-        )
-        
-        if (responseMessage.role === "assistant") {
-          const realUserMessage: Message = {
-            ...tempUserMessage,
-            id: `user-${Date.now()}`, 
-          }
-          return hasRealUserMessage 
-            ? [...withoutTemp, responseMessage]
-            : [...withoutTemp, realUserMessage, responseMessage]
-        }
-        
+        // Add both real user message and assistant response
+        // The API should return the assistant message, but if it includes user message, handle both
         return [...withoutTemp, responseMessage]
       })
 
+      // Reload conversation to get the complete state with both messages
+      const updatedConv = await chatApi.getConversation(effectiveWorkspaceId, convId)
+      setMessages(updatedConv.messages || [])
+
+      // Update conversation list
       setConversations((prev) =>
         prev.map((c) =>
           c.id === convId
-            ? { 
-                ...c, 
-                lastMessage: responseMessage.role === "assistant" 
-                  ? responseMessage.content 
-                  : content,
-                updatedAt: responseMessage.createdAt 
-              }
+            ? { ...c, lastMessage: responseMessage.content, updatedAt: responseMessage.createdAt }
             : c
         )
       )
@@ -179,6 +171,7 @@ export function ChatInterface({
       console.error("Failed to send message:", error)
       toast.error("Failed to send message")
 
+      // Remove temp user message on error
       setMessages((prev) => prev.filter((m) => m.id !== tempUserMessage.id))
     } finally {
       setIsLoading(false)
