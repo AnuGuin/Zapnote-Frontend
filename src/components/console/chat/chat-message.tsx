@@ -1,3 +1,4 @@
+// src/components/console/chat/chat-message.tsx
 "use client"
 
 import { useState } from "react"
@@ -10,18 +11,15 @@ import { cn } from "@/src/lib/utils"
 
 interface ChatMessageProps {
   message: Message
-  isStreaming?: boolean
 }
 
-export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
+export function ChatMessage({ message }: ChatMessageProps) {
   const [copied, setCopied] = useState(false)
   const isUser = message.role === "user"
-  
-  const displayContent = message.content
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(displayContent || "")
+      await navigator.clipboard.writeText(message.content || "")
       setCopied(true)
       toast.success("Copied to clipboard")
       setTimeout(() => setCopied(false), 2000)
@@ -66,7 +64,7 @@ export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
     <div className="w-full relative group animate-in fade-in slide-in-from-bottom-2 duration-300">
       <div className="w-full text-foreground p-4 relative">
         <div className="prose prose-sm max-w-none dark:prose-invert">
-          <Streamdown>{displayContent || ""}</Streamdown>
+          <Streamdown>{message.content || ""}</Streamdown>
         </div>
 
         {message.sources && message.sources.length > 0 && (
