@@ -189,6 +189,18 @@ export function ChatInterface({
     try {
       const conv = await chatApi.getConversation(effectiveWorkspaceId, id)
       setMessages(conv.messages || [])
+
+      // Update URL
+      const params = new URLSearchParams()
+      if (conv.workspaceId) params.set("workspaceId", conv.workspaceId)
+      if (conv.sourceItemId) {
+        params.set("sourceItemId", conv.sourceItemId)
+        params.set("type", "link")
+      } else {
+        params.set("type", "workspace")
+      }
+      
+      router.push(`/chat?${params.toString()}`)
     } catch (error) {
       console.error("Failed to load conversation:", error)
       toast.error("Failed to load conversation")
@@ -340,7 +352,7 @@ export function ChatInterface({
 
           {/* Input Area */}
           <div className="bg-background/95 backdrop-blur-sm py-4 px-4">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto w-full">
               <AI_Prompt
                 onSendMessage={handleSendMessage}
                 workspaceId={effectiveWorkspaceId}

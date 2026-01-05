@@ -49,7 +49,7 @@ export function RecentItemsList({ items }: RecentItemsListProps) {
           >
             <div className="flex items-start justify-between gap-3 mb-2">
               <div className="flex items-center gap-2 min-w-0 flex-1">
-                <StatusIcon className={cn("h-4 w-4 shrink-0", statusConfig[item.status].color)} />
+                <StatusIcon className={cn("h-4 w-4 shrink-0", statusConfig[item.status].color, item.status === 'PROCESSING' && "animate-spin")} />
                 <div className="flex flex-col min-w-0 flex-1">
                   <a
                     href={item.sourceUrl}

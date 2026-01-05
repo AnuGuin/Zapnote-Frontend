@@ -65,7 +65,7 @@ export function ChatMessage({ message, isStreaming, streamingContent }: ChatMess
 
   return (
     <div className="w-full relative group animate-in fade-in slide-in-from-bottom-2 duration-300">
-      <div className="max-w-[80%] text-foreground rounded-2xl p-4 relative bg-muted/30">
+      <div className="w-full text-foreground p-4 relative">
         <div className="prose prose-sm max-w-none dark:prose-invert">
           <Streamdown>{displayContent || ""}</Streamdown>
         </div>

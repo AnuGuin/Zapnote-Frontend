@@ -9,9 +9,11 @@ import { RecentItemsList } from "@/src/components/console/home/recent-items-list
 import Calendar31 from "@/src/components/console/home/calendar-31"
 import { useWorkspace } from "@/src/context/workspace-context"
 import { useAuth } from "@/src/context/auth-context"
+import { useSidebar } from "@/src/components/ui/sidebar"
 
 export default function HomePage() {
   const { user } = useAuth()
+  const { open } = useSidebar()
   const {
     workspaces,
     currentWorkspace,
@@ -68,9 +70,9 @@ export default function HomePage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className={`grid grid-cols-1 gap-6 ${open ? 'xl:grid-cols-3' : 'lg:grid-cols-3'}`}>
         {/* Left Column - 2/3 width */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className={`${open ? 'xl:col-span-2' : 'lg:col-span-2'} space-y-6`}>
           {/* Workspaces Section */}
           <Card>
             <CardHeader>

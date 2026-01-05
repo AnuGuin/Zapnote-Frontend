@@ -8,9 +8,11 @@ import { LoaderThree } from "@/src/components/ui/loader"
 import { KnowledgeItemCard } from "@/src/components/console/workspace/knowledge-item-card"
 import { AddLinkDialog } from "@/src/components/console/home/add-link-dialog"
 import { useWorkspace } from "@/src/context/workspace-context"
+import { useSidebar } from "@/src/components/ui/sidebar"
 
 export default function WorkspacePage({ params }: { params: Promise<{ workspaceId: string }> }) {
   const { workspaceId } = use(params)
+  const { open } = useSidebar()
   const router = useRouter()
   const { 
     workspaces, 
@@ -99,7 +101,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ workspaceI
             {currentWorkspace.role !== 'VIEWER' && <AddLinkDialog workspaceId={workspaceId} />}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-6">
+          <div className={`grid grid-cols-1 gap-4 pb-6 ${open ? 'lg:grid-cols-2 xl:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
             {recentItems.map((item) => (
               <KnowledgeItemCard key={item.id} item={item} />
             ))}

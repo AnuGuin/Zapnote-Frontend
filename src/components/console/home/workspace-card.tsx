@@ -112,7 +112,7 @@ export function WorkspaceCard({ workspace, isActive, onSelect }: WorkspaceCardPr
           </CardHeader>
         </CollapsibleTrigger>
 
-        <CollapsibleContent>
+        <CollapsibleContent className="overflow-hidden transition-all duration-300 ease-in-out">
           <CardContent className="pt-0 space-y-4">
             <div className="flex gap-2 flex-wrap">
               {canEdit && <AddMemberDialog workspaceId={workspace.id} />}

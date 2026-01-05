@@ -75,14 +75,17 @@ export const chatApi = {
     const chunkSize = 5;
     let currentIndex = 0;
 
-    const streamInterval = setInterval(() => {
-      if (currentIndex < content.length) {
-        const chunk = content.slice(currentIndex, currentIndex + chunkSize);
-        onChunk(content.slice(0, currentIndex + chunk.length));
-        currentIndex += chunkSize;
-      } else {
-        clearInterval(streamInterval);
-      }
-    }, 30);
+    return new Promise<void>((resolve) => {
+      const streamInterval = setInterval(() => {
+        if (currentIndex < content.length) {
+          const chunk = content.slice(currentIndex, currentIndex + chunkSize);
+          onChunk(content.slice(0, currentIndex + chunk.length));
+          currentIndex += chunkSize;
+        } else {
+          clearInterval(streamInterval);
+          resolve();
+        }
+      }, 30);
+    });
   },
 };
