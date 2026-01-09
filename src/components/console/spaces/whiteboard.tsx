@@ -81,10 +81,12 @@ export default function CollaborativeWhiteboard() {
     }
   }, [currentSpace, excalidrawAPI, loadSpaceElements]);
 
+  // Real-time element updates - backend broadcasts to workspace rooms automatically
   useEffect(() => {
     if (!socket || !currentSpace || !excalidrawAPI) return;
 
     const handleElementCreated = (data: any) => {
+        console.log('Socket received element:created', data);
         if (data.spaceId !== currentSpace.id) return;
         const element = data.content; 
         
@@ -100,23 +102,21 @@ export default function CollaborativeWhiteboard() {
     };
 
     const handleElementUpdated = (data: any) => {
+        console.log('Socket received element:updated/moved', data);
         if (data.spaceId !== currentSpace.id) return;
         const element = data.content;
         
         const sceneElements = excalidrawAPI.getSceneElements();
-        // If we are currently selecting this element, avoid update to prevent conflict/jumping while dragging
         const selectedIds = excalidrawAPI.getAppState().selectedElementIds;
-        if (selectedIds[element.id]) return;
+        if (selectedIds && selectedIds[element.id]) return;
 
         const newElements = sceneElements.map((el: any) => el.id === element.id ? element : el);
-        // If distinct (element wasn't in scene), add it?
         if (!sceneElements.find((el:any) => el.id === element.id)) {
             newElements.push(element);
         }
 
         excalidrawAPI.updateScene({ elements: newElements });
-        
-        // Update synced ref
+
         lastSyncedElements.current = lastSyncedElements.current.map(e => e.id === element.id ? element : e);
         if (!lastSyncedElements.current.find(e => e.id === element.id)) {
              lastSyncedElements.current.push(element);
@@ -124,9 +124,9 @@ export default function CollaborativeWhiteboard() {
     };
 
     const handleElementDeleted = (data: any) => {
+        console.log('Socket received element:deleted', data);
         if (data.spaceId !== currentSpace.id) return;
         
-        // data might be { id, spaceId }
         const elId = data.id || data.content?.id;
         if (!elId) return;
         

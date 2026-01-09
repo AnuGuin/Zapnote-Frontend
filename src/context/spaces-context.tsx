@@ -19,7 +19,6 @@ type SpacesContextType = {
   createSpace: (name: string) => Promise<void>
   deleteSpace: (spaceId: string) => Promise<void>
   
-  // mechanism for header to trigger save in whiteboard
   registerSaveHandler: (handler: () => Promise<void> | void) => void
   triggerSave: () => Promise<void>
 }
@@ -38,11 +37,12 @@ export function SpacesProvider({ children }: { children: React.ReactNode }) {
   
   const { socket } = useSocket()
 
-  // Socket listener for space deletion
+  // Socket listener for space deletion - backend handles room management automatically
   useEffect(() => {
     if (!socket || !currentWorkspace) return
 
     const handleSpaceDeleted = (data: { workspaceId: string, spaceId: string }) => {
+      console.log('Socket received space:deleted', data)
       if (data.workspaceId === currentWorkspace.id) {
         setSpaces(prev => prev.filter(s => s.id !== data.spaceId))
         if (currentSpace?.id === data.spaceId) {
@@ -71,9 +71,7 @@ export function SpacesProvider({ children }: { children: React.ReactNode }) {
       const spacesData = await spacesApi.getSpaces(currentWorkspace.id)
       setSpaces(spacesData)
 
-      // Auto-select first space if none selected or current not in list
       if (spacesData.length > 0) {
-        // preserve current if it exists
         setCurrentSpace(prev => {
           if (prev && spacesData.find(s => s.id === prev.id)) return prev
           return spacesData[0]
@@ -89,7 +87,6 @@ export function SpacesProvider({ children }: { children: React.ReactNode }) {
     }
   }, [currentWorkspace])
 
-  // Load spaces when workspace changes
   useEffect(() => {
     loadSpaces()
   }, [loadSpaces])
