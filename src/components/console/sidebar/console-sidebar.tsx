@@ -72,8 +72,15 @@ export function ConsoleSidebar() {
     }
   }
 
-  const handleDragStart = (e: React.DragEvent, url: string, label: string, itemId?: string) => {
-    e.dataTransfer.setData("application/json", JSON.stringify({ type: 'link', url, label, itemId }))
+  // Update signature to accept userIntent
+  const handleDragStart = (e: React.DragEvent, url: string, label: string, itemId?: string, userIntent?: string) => {
+    e.dataTransfer.setData("application/json", JSON.stringify({ 
+        type: 'link', 
+        url, 
+        label, 
+        itemId,
+        userIntent // Include userIntent in data payload
+    }))
   }
 
   return (
@@ -129,6 +136,24 @@ export function ConsoleSidebar() {
                 </SidebarMenuItem>
               </Collapsible>
 
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/search"}>
+                  <Link href="/search">
+                    <SearchIcon />
+                    <span>Search</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/chat"}>
+                  <Link href="/chat">
+                    <MessageCircleIcon />
+                    <span>Chat</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
               <Collapsible className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
@@ -162,7 +187,8 @@ export function ConsoleSidebar() {
                                 }
                               }}
                               draggable
-                              onDragStart={(e) => handleDragStart(e, item.sourceUrl, item.summary || "Link", item.id)}
+                              // Pass item.userIntent to the drag handler
+                              onDragStart={(e) => handleDragStart(e, item.sourceUrl, item.summary || "Link", item.id, item.userIntent)}
                               title={item.summary || item.sourceUrl}
                             >
                               <LinkIcon className="w-3 h-3 mr-2 opacity-70" />
@@ -175,24 +201,6 @@ export function ConsoleSidebar() {
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/search"}>
-                  <Link href="/search">
-                    <SearchIcon />
-                    <span>Search</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/chat"}>
-                  <Link href="/chat">
-                    <MessageCircleIcon />
-                    <span>Chat</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
 
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={pathname === "/spaces"}>

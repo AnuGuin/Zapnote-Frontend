@@ -81,9 +81,10 @@ export default function CollaborativeWhiteboard() {
     }
   }, [currentSpace, excalidrawAPI, loadSpaceElements]);
 
-  // Real-time element updates - backend broadcasts to workspace rooms automatically
   useEffect(() => {
     if (!socket || !currentSpace || !excalidrawAPI) return;
+
+    socket.emit('join-space', currentSpace.id);
 
     const handleElementCreated = (data: any) => {
         console.log('Socket received element:created', data);
@@ -92,7 +93,6 @@ export default function CollaborativeWhiteboard() {
         
         const sceneElements = excalidrawAPI.getSceneElements();
         if (sceneElements.some((el: any) => el.id === element.id)) {
-             // Already exists, update synced ref
              lastSyncedElements.current = [...lastSyncedElements.current, element];
              return;
         }
@@ -141,10 +141,11 @@ export default function CollaborativeWhiteboard() {
 
     socket.on('element:created', handleElementCreated);
     socket.on('element:updated', handleElementUpdated);
-    socket.on('element:moved', handleElementUpdated); // Use same handler
+    socket.on('element:moved', handleElementUpdated); 
     socket.on('element:deleted', handleElementDeleted);
 
     return () => {
+        socket.emit('leave-space', currentSpace.id);
         socket.off('element:created', handleElementCreated);
         socket.off('element:updated', handleElementUpdated);
         socket.off('element:moved', handleElementUpdated);
@@ -162,7 +163,6 @@ export default function CollaborativeWhiteboard() {
     }
 
     try {
-      
       const newElements = currentElements.filter(
         (el: any) => !lastSyncedElements.current.find(
              (synced) => synced.id === el.id && synced.version === el.version
@@ -249,7 +249,6 @@ export default function CollaborativeWhiteboard() {
     try {
              if (excalidrawAPI) {
                  const elements = excalidrawAPI.getSceneElements();
-                 // Find group
                  const el = elements.find((e:any) => e.id === selectedCard.elementId);
                  if (el && el.groupIds.length > 0) {
                      const groupId = el.groupIds[0];
@@ -299,7 +298,8 @@ export default function CollaborativeWhiteboard() {
       if (item.type === "link" || item.url) {
            const groupId = `group-${Date.now()}-${Math.random()}`;
            const cardWidth = 240;
-           const cardHeight = 80;
+           // Adjust height if there is intent/write-up
+           const cardHeight = item.userIntent ? 140 : 80;
            
            const cardBg = {
             type: "rectangle",
@@ -308,7 +308,7 @@ export default function CollaborativeWhiteboard() {
             width: cardWidth,
             height: cardHeight,
             angle: 0,
-            strokeColor: "#e2e8f0",
+            strokeColor: "#94a3b8", // Darker border (Slate 400) for better visibility
             backgroundColor: "#ffffff",
             fillStyle: "solid",
             strokeWidth: 1,
@@ -357,6 +357,7 @@ export default function CollaborativeWhiteboard() {
             baseline: 14,
             id: `card-label-${Date.now()}-${Math.random()}`,
            };
+
            const linkText = {
              type: "text",
              x: sceneX + 16,
@@ -390,6 +391,42 @@ export default function CollaborativeWhiteboard() {
            };
            
            newElements = [cardBg, labelText, linkText];
+
+           // Render userIntent if available
+           if (item.userIntent) {
+               const intentText = {
+                 type: "text",
+                 x: sceneX + 16,
+                 y: sceneY + 68,
+                 width: cardWidth - 32,
+                 height: 60,
+                 angle: 0,
+                 strokeColor: "#64748b",
+                 backgroundColor: "transparent",
+                 fillStyle: "solid",
+                 strokeWidth: 1,
+                 strokeStyle: "solid",
+                 roughness: 0,
+                 opacity: 100,
+                 groupIds: [groupId],
+                 seed: Math.random(),
+                 version: 1,
+                 versionNonce: 0,
+                 isDeleted: false,
+                 boundElements: null,
+                 updated: Date.now(),
+                 text: item.userIntent.length > 60 ? item.userIntent.substring(0, 57) + "..." : item.userIntent,
+                 originalText: item.userIntent,
+                 fontSize: 12,
+                 fontFamily: 1,
+                 textAlign: "left",
+                 verticalAlign: "top",
+                 baseline: 10,
+                 id: `card-intent-${Date.now()}-${Math.random()}`,
+               };
+               newElements.push(intentText);
+           }
+
       } else if (item.content || item.text) {
            const textEl = {
             type: "text",
@@ -422,7 +459,7 @@ export default function CollaborativeWhiteboard() {
         excalidrawAPI.updateScene({
           elements: [...elements, ...newElements],
         });
-        saveElements(false); // trigger save
+        saveElements(false);
         toast.success("Item added to whiteboard");
       }
     } catch (err) {
