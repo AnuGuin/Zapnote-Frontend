@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
+import { useSocket } from "@/src/context/socket-context";
 import { useSpaces } from "@/src/context/spaces-context";
 import { useWorkspace } from "@/src/context/workspace-context";
 import "@excalidraw/excalidraw/index.css";
@@ -32,6 +33,7 @@ interface KnowledgeCardSelection {
 
 export default function CollaborativeWhiteboard() {
   const [excalidrawAPI, setExcalidrawAPI] = useState<any>(null);
+  const { socket } = useSocket();
   const { 
     currentSpace, 
     registerSaveHandler, 
@@ -78,6 +80,77 @@ export default function CollaborativeWhiteboard() {
       loadSpaceElements();
     }
   }, [currentSpace, excalidrawAPI, loadSpaceElements]);
+
+  useEffect(() => {
+    if (!socket || !currentSpace || !excalidrawAPI) return;
+
+    const handleElementCreated = (data: any) => {
+        if (data.spaceId !== currentSpace.id) return;
+        const element = data.content; 
+        
+        const sceneElements = excalidrawAPI.getSceneElements();
+        if (sceneElements.some((el: any) => el.id === element.id)) {
+             // Already exists, update synced ref
+             lastSyncedElements.current = [...lastSyncedElements.current, element];
+             return;
+        }
+        
+        excalidrawAPI.updateScene({ elements: [...sceneElements, element] });
+        lastSyncedElements.current = [...lastSyncedElements.current, element];
+    };
+
+    const handleElementUpdated = (data: any) => {
+        if (data.spaceId !== currentSpace.id) return;
+        const element = data.content;
+        
+        const sceneElements = excalidrawAPI.getSceneElements();
+        // If we are currently selecting this element, avoid update to prevent conflict/jumping while dragging
+        const selectedIds = excalidrawAPI.getAppState().selectedElementIds;
+        if (selectedIds[element.id]) return;
+
+        const newElements = sceneElements.map((el: any) => el.id === element.id ? element : el);
+        // If distinct (element wasn't in scene), add it?
+        if (!sceneElements.find((el:any) => el.id === element.id)) {
+            newElements.push(element);
+        }
+
+        excalidrawAPI.updateScene({ elements: newElements });
+        
+        // Update synced ref
+        lastSyncedElements.current = lastSyncedElements.current.map(e => e.id === element.id ? element : e);
+        if (!lastSyncedElements.current.find(e => e.id === element.id)) {
+             lastSyncedElements.current.push(element);
+        }
+    };
+
+    const handleElementDeleted = (data: any) => {
+        if (data.spaceId !== currentSpace.id) return;
+        
+        // data might be { id, spaceId }
+        const elId = data.id || data.content?.id;
+        if (!elId) return;
+        
+        const sceneElements = excalidrawAPI.getSceneElements();
+        const newElements = sceneElements.map((el: any) => 
+            el.id === elId ? { ...el, isDeleted: true } : el
+        );
+        excalidrawAPI.updateScene({ elements: newElements });
+        
+        lastSyncedElements.current = lastSyncedElements.current.filter(e => e.id !== elId);
+    };
+
+    socket.on('element:created', handleElementCreated);
+    socket.on('element:updated', handleElementUpdated);
+    socket.on('element:moved', handleElementUpdated); // Use same handler
+    socket.on('element:deleted', handleElementDeleted);
+
+    return () => {
+        socket.off('element:created', handleElementCreated);
+        socket.off('element:updated', handleElementUpdated);
+        socket.off('element:moved', handleElementUpdated);
+        socket.off('element:deleted', handleElementDeleted);
+    };
+  }, [socket, currentSpace, excalidrawAPI]);
 
   const saveElements = useCallback(async (force = false) => {
     if (!currentSpace || !currentWorkspace || !canEdit || !excalidrawAPI) return;

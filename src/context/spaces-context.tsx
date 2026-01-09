@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import { useWorkspace } from "./workspace-context"
 import { spacesApi, type Space } from "@/src/lib/api/spaces"
 import { toast } from "sonner"
+import { useSocket } from "./socket-context"
 
 type SpacesContextType = {
   selectedTool: { type: 'link', url: string, label: string } | null
@@ -34,6 +35,29 @@ export function SpacesProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [saveHandler, setSaveHandler] = useState<(() => Promise<void> | void) | null>(null)
+  
+  const { socket } = useSocket()
+
+  // Socket listener for space deletion
+  useEffect(() => {
+    if (!socket || !currentWorkspace) return
+
+    const handleSpaceDeleted = (data: { workspaceId: string, spaceId: string }) => {
+      if (data.workspaceId === currentWorkspace.id) {
+        setSpaces(prev => prev.filter(s => s.id !== data.spaceId))
+        if (currentSpace?.id === data.spaceId) {
+          setCurrentSpace(null)
+          toast.info("This space was deleted by another user")
+        }
+      }
+    }
+
+    socket.on('space:deleted', handleSpaceDeleted)
+
+    return () => {
+      socket.off('space:deleted', handleSpaceDeleted)
+    }
+  }, [socket, currentWorkspace, currentSpace])
 
   const loadSpaces = useCallback(async () => {
     if (!currentWorkspace) {

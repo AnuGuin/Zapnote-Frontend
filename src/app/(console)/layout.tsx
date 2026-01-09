@@ -5,12 +5,14 @@ import { SpacesProvider } from "@/src/context/spaces-context"
 import { WorkspaceProvider } from "@/src/context/workspace-context"
 import { ChatUIProvider } from "@/src/context/chat-ui-context"
 import { AuthGuard } from "@/src/components/auth/auth-guard"
+import { SocketProvider } from "@/src/context/socket-context"
 
 export default function ConsoleLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthGuard>
       <WorkspaceProvider>
-        <SpacesProvider>
+        <SocketProvider>
+          <SpacesProvider>
           <ChatUIProvider>
             <SidebarProvider>
               <ConsoleSidebar />
@@ -23,6 +25,7 @@ export default function ConsoleLayout({ children }: { children: React.ReactNode 
             </SidebarProvider>
           </ChatUIProvider>
         </SpacesProvider>
+        </SocketProvider>
       </WorkspaceProvider>
     </AuthGuard>
   )
